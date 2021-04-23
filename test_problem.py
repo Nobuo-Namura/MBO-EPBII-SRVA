@@ -4,7 +4,7 @@ test_problem.py
 Copyright (c) 2021 Nobuo Namura
 This code is released under the MIT License.
 
-This Python code is for MBO-EPBII-SRVA and MBO-EPBII published in the following article:
+This Python code is for MBO-EPBII-SRVA and MBO-EPBII published in the following articles:
 ・N. Namura, "Surrogate-assisted Reference Vector Adaptation to Various Pareto Front Shapes 
 　for Many-objective Bayesian Optimization," 2021 IEEE Congress on Evolutionary Computation, Krakow, 2021.
 ・N. Namura, K. Shimoyama, and S. Obayashi, "Expected Improvement of Penalty-based Boundary 
