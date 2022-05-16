@@ -98,7 +98,7 @@ class Kriging:
         self.x0 = (self.x - self.xmin)/(self.xmax - self.xmin)
 
 #======================================================================
-    def kriging_training(self, theta0 = 3.0, npop = 500, ngen = 500, mingen = 0, STOP=True, NOISE=[False]):
+    def kriging_training(self, theta0 = 3.0, npop = 500, ngen = 500, mingen = 0, STOP=True, NOISE=[False], PRINT=True):
         self.theta = np.zeros((self.nf+self.ng, self.nx+1))
         func = self.likelihood
         getcontext().prec = 28#56
@@ -115,7 +115,7 @@ class Kriging:
                 theta_min = np.full(self.nx, -4.0)
                 theta_max = np.full(self.nx, theta0)
             sga = SGA(func, theta_min, theta_max, npop=npop, ngen=ngen, mingen=mingen, \
-                      MIN=False, STOP=STOP, PRINT=True, INIT=False, \
+                      MIN=False, STOP=STOP, PRINT=PRINT, INIT=False, \
                       pcross=0.9, pmut=1.0/len(theta_min), eta_c=10.0, eta_m=20.0)
             Ln, theta = sga.optimize()
             if NOISE[i]:
@@ -338,9 +338,9 @@ class Kriging:
         return ref_theta, normalized_refvec_distance, dmin
 
 #======================================================================
-    def kriging_infill(self, PLOT=False):
+    def kriging_infill(self, PLOT=False, PRINT=True):
         if self.CRITERIA == 'EPBII' or self.CRITERIA == 'EIPBII':
-            self.utopia_nadir_on_kriging(PLOT=PLOT)
+            self.utopia_nadir_on_kriging(PLOT=PLOT, PRINT=PRINT)
             self.reference_pbi()
             
             if self.VER2021:
@@ -356,7 +356,8 @@ class Kriging:
                     func = self.kriging_epbii
                 else:
                     func = self.kriging_eipbii
-                moead = MOEAD(self.refvec, func, self.xmin, self.xmax, ngen=50, PRINT=True, HOT_START=True, \
+                print(self.CRITERIA + ' maximization with MOEA/D')
+                moead = MOEAD(self.refvec, func, self.xmin, self.xmax, ngen=50, PRINT=PRINT, HOT_START=True, \
                               nghbr=20, factor=1.0, pcross=1.0, pmut=1.0/self.nx, eta_c=10.0, eta_m=20.0)
                 self.epbii, self.x_candidate = moead.optimize(x_init=x_init)
                 self.f_candidate = np.zeros([self.nref,self.nf])
@@ -368,6 +369,7 @@ class Kriging:
                 self.f_candidate = np.zeros([self.nref,self.nf])
                 self.x_candidate = np.zeros([self.nref,self.nx])
                 self.epbii = np.zeros(self.nref)
+                print(self.CRITERIA + ' maximization with single objective GA')
                 for iref in range(self.nref):
                     f_opt0 = (self.f_opt - self.utopia)/(self.nadir - self.utopia)
                     if self.CRITERIA == 'EIPBII':
@@ -427,11 +429,11 @@ class Kriging:
             return x_add, f_add
 
 #======================================================================
-    def utopia_nadir_on_kriging(self, PLOT=False):
+    def utopia_nadir_on_kriging(self, PLOT=False, PRINT=True):
         self.utopia = np.zeros(self.nf)
         self.nadir = np.ones(self.nf)
         
-        self.f_opt, self.x_opt = self.multiobjective_optimization_on_kriging(PLOT=False)
+        self.f_opt, self.x_opt = self.multiobjective_optimization_on_kriging(PLOT=False, PRINT=PRINT)
         if self.VER2021:
             f_sga, x_sga = self.single_objective_optimization_on_kriging()
             self.f_opt = np.vstack([self.f_opt, f_sga])
@@ -456,22 +458,24 @@ class Kriging:
         minmax = 1.0 - 2.0*self.MIN.astype(np.float)
         self.utopia = np.where(minmax<0.0, f_min, f_max)
         self.nadir = np.where(minmax<0.0, f_max, f_min)
-        print('Utopia: ', self.utopia)
-        print('Nadir: ', self.nadir)
+        if PRINT:
+            print('Utopia: ', self.utopia)
+            print('Nadir: ', self.nadir)
         return
 
 #======================================================================
-    def multiobjective_optimization_on_kriging(self, PLOT=False):
+    def multiobjective_optimization_on_kriging(self, PLOT=False, PRINT=True):
+        print('Multi-objective optimization on the Kriging models')
         weight = np.where(self.MIN, -1.0, 1.0)
         if self.OPTIMIZER=='NSGA3':
             nref, refvec_on_hp = self.generate_refvec(self.nf, self.n_randvec_nsga3, self.nh_nsga3, self.nhin_nsga3, multiplier=10)
             f_opt, x_opt = NSGA3(self.kriging_multiobjective_f, self.xmin.tolist(), self.xmax.tolist(), self.nx, \
                                  weight.tolist(), ngen=self.ngen_nsga3, nref=nref, refvec=refvec_on_hp, \
-                                 p_cross=1.0, eta_cross=10.0, eta_mut=20.0, PRINT=True, PLOT=PLOT)
+                                 p_cross=1.0, eta_cross=10.0, eta_mut=20.0, PRINT=PRINT, PLOT=PLOT)
         else:
             f_opt, x_opt = NSGA2(self.kriging_multiobjective_f, self.xmin.tolist(), self.xmax.tolist(), nx=self.nx, \
                                            weights=weight.tolist(), npop=self.npop_nsga2, ngen=self.ngen_nsga2, \
-                                           p_cross=0.9, eta_cross=10.0, eta_mut=20.0, PRINT=True, PLOT=PLOT)
+                                           p_cross=0.9, eta_cross=10.0, eta_mut=20.0, PRINT=PRINT, PLOT=PLOT)
         return f_opt, x_opt
 
 #======================================================================

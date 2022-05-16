@@ -207,7 +207,7 @@ if __name__ == "__main__":
                 if PLOT:
                     f_pareto = gp.f[rank==1.0]
                     if nf == 2:
-                        plt.figure('test 2D Objective-space '+func_name+' with '+str(gp.ns-gp.n_add)+'-samples')
+                        plt.figure('2D Objective-space '+func_name+' with '+str(gp.ns-gp.n_add)+'-samples')
                         plt.plot(gp.f[:-gp.n_add,0], gp.f[:-gp.n_add,1], '.', c='black', label='sample points')
                         plt.plot(gp.f[-gp.n_add:,0], gp.f[-gp.n_add:,1], '.', c='magenta', label='additional sample points')
                         plt.plot(gp.utopia[0], gp.utopia[1], '+', c='black', label='utopia point')
