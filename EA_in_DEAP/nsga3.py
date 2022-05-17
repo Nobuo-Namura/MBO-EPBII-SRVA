@@ -76,7 +76,8 @@ def NSGA3(func, xmin, xmax, nx, weights, ngen, nref, refvec, p_cross=1.0, eta_cr
         # Compile statistics about the population
         record = stats.compile(pop)
         logbook.record(gen=0, evals=len(invalid_ind), **record)
-        print(logbook.stream)
+        if PRINT:
+            print(logbook.stream)
     
         # Begin the generational process
         for gen in range(1, ngen):
@@ -94,7 +95,8 @@ def NSGA3(func, xmin, xmax, nx, weights, ngen, nref, refvec, p_cross=1.0, eta_cr
             # Compile statistics about the new population
             record = stats.compile(pop)
             logbook.record(gen=gen, evals=len(invalid_ind), **record)
-            print(logbook.stream)
+            if PRINT:
+                print(logbook.stream)
     
         return pop, pop_ini, logbook
     
