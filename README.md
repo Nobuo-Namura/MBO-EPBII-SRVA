@@ -7,4 +7,15 @@ This code was developed with Python 3.6.5.
 This code except below is released under the MIT License, see LICENSE.txt.  
 The code in "EA_in_DEAP" is released under the GNU LESSER GENERAL PUBLIC LICENSE, see EA_in_DEAP/LICENSE.txt.
 
+#### Requirement:
+* numpy
+* pandas
+* scipy
+* matplotlib
+* scikit-learn
+* deap
+* pyDOE
+* pygmo
+* optproblems
+
 Contact: nobuo.namura.gp@gmail.com
