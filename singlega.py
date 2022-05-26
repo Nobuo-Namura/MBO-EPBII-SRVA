@@ -273,7 +273,7 @@ if __name__ == "__main__":
                 F[i,j] = func(np.array([X[i,j],Y[i,j]]))
         plt.figure('problem')
         plt.plot(xopt[0],xopt[1],'o',c='black')
-        plt.pcolor(X,Y,F)
+        plt.pcolor(X,Y,F,cmap='jet',shading="auto")
         plt.colorbar()
         plt.contour(X,Y,F,40,colors='black')
         plt.show()
@@ -281,5 +281,5 @@ if __name__ == "__main__":
         fig = plt.figure('problem-3D')
         ax = Axes3D(fig)
         ax.scatter3D(xopt[0],xopt[1],fopt,c='black')
-        ax.plot_surface(X, Y, F, rstride=1, cstride=1, cmap=cm.coolwarm)
+        ax.plot_surface(X, Y, F, rstride=1, cstride=1, cmap=cm.jet)
     

@@ -38,46 +38,45 @@ import indicator
 #======================================================================
 if __name__ == "__main__":
     """Constraints are unavailable in this version"""
-    
-    """=== Edit from here ==========================================="""
+    division = pd.read_csv('reference_vector_division.csv', index_col=0)
     #test problem
-    func_name = 'ZDT3'        # Test problem name in test_problem.py
-    seed = 101                # Random seed for SGM function
-    nx = 2                    # Number of design variables (>=1)
-    nf = 2                    # Number of objective functions (>=2)
-    k = 1                     # Position paramete k in WFG problems
-    xmin = np.full(nx, 0.0)   # Lower bound of design sapce
-    xmax = np.full(nx, 1.0)   # Upper bound of design sapce
-    MIN = np.full(nf, True)   # True=Minimization, False=Maximization
+    func_name = 'ZDT3'                       # Test problem name in test_problem.py
+    seed = 101                               # Random seed for SGM function
+    nx = 2                                   # Number of design variables (>=1)
+    nf = 2                                   # Number of objective functions (>=2)
+    k = 1                                    # Position paramete k in WFG problems
+    xmin = np.full(nx, 0.0)                  # Lower bound of design sapce
+    xmax = np.full(nx, 1.0)                  # Upper bound of design sapce
+    MIN = np.full(nf, True)                  # True=Minimization, False=Maximization
     #EGO
-    n_trial = 1               # Number of independent run with different initial samples (>=1)
-    n_add = 5                 # Number of additional sample points at each iteration (>=1)
-    ns_max = 50               # Number of maximum function evaluation
-    CRITERIA = 'EPBII'        # EPBII or EIPBII
-    NOISE = np.full(nf,False) # Use True if functions are noisy (Griewank, Rastrigin, DTLZ1, etc.)
-    VER2021 = True            # True=2021 version, False=2017 version
-    SRVA = True               # True=surrogate-assisted reference vector adaptation, False=two-layered simplex latice-design
-    OPTIMIZER = 'NSGA3'       # NSGA3 or NSGA2 for ideal and nadir point determination (and reference vector adaptation if VER2021=True)
+    n_trial = 1                              # Number of independent run with different initial samples (>=1)
+    n_add = 5                                # Number of additional sample points at each iteration (>=1)
+    ns_max = 50                              # Number of maximum function evaluation
+    CRITERIA = 'EPBII'                       # EPBII or EIPBII
+    NOISE = np.full(nf,False)                # Use True if functions are noisy (Griewank, Rastrigin, DTLZ1, etc.)
+    VER2021 = True                           # True=2021 version, False=2017 version
+    SRVA = True                              # True=surrogate-assisted reference vector adaptation, False=two-layered simplex latice-design
+    OPTIMIZER = 'NSGA3'                      # NSGA3 or NSGA2 for ideal and nadir point determination (and reference vector adaptation if VER2021=True)
     #reference vector for EPBII
-    n_randvec = 20            # Number of adaptive reference vector (>=0)
-    nh = 0                    # If VER2021=False, division number for the outer layer of the two-layered simplex latice-design (>=0)
-    nhin = 0                  # If VER2021=False, division number for the inner layer of the two-layered simplex latice-design (>=0)
+    n_randvec = division.loc[nf, 'n']        # Number of adaptive reference vector (>=0)
+    nh = 0                                   # If VER2021=False, division number for the outer layer of the two-layered simplex latice-design (>=0)
+    nhin = 0                                 # If VER2021=False, division number for the inner layer of the two-layered simplex latice-design (>=0)
     #NSGA3 if OPTIMIZER=NSGA3:
-    n_randvec_nsga3 = 0       # Number of random reference vector (>=0)
-    nh_nsga3 = 99             # Division number for the outer layer of the two-layered simplex latice-design (>=0)
-    nhin_nsga3 = 0            # Division number for the inner layer of the two-layered simplex latice-design (>=0)
-    ngen_nsga3 = 200          # Number of generation in NSGA3
+    n_randvec_nsga3 = 0                      # Number of random reference vector (>=0)
+    nh_nsga3 = division.loc[nf, 'nh_ga']     # Division number for the outer layer of the two-layered simplex latice-design (>=0)
+    nhin_nsga3 = division.loc[nf, 'nhin_ga'] # Division number for the inner layer of the two-layered simplex latice-design (>=0)
+    ngen_nsga3 = 200                         # Number of generation in NSGA3
     #NSGA2 if OPTIMIZER=NSGA2:
-    npop_nsga2 = 100          # Number of population in NSGA2
-    ngen_nsga2 = 200          # Number of generation in NSGA2
+    npop_nsga2 = division.loc[nf, 'n_ga']    # Number of population in NSGA2
+    ngen_nsga2 = 200                         # Number of generation in NSGA2
     #initial sample
-    GENE = True               # True=Generate initial sample with LHS, False=Read files
-    ns = 30                   # If GENE=True, number of initial sample points (>=2)
+    GENE = True                              # True=Generate initial sample with LHS, False=Read files
+    ns = 30                                  # If GENE=True, number of initial sample points (>=2)
     #others
-    hv_ref = np.array([1.1,1.1]) # reference point for hypervolume
-    IGD_plus = True           # True=IGD+, False=IGD
-    PLOT = True               # True=Plot the results
-    RESTART = False           # True=Read sample*_out.csv if it exists, False=Read sample*.csv
+    hv_ref = np.array([1.1,1.1])             # reference point for hypervolume
+    IGD_plus = True                          # True=IGD+, False=IGD
+    PLOT = True                              # True=Plot the results
+    RESTART = False                          # True=Read sample*_out.csv if it exists, False=Read sample*.csv
     current_dir = '.'
     fname_design_space = 'design_space'
     fname_sample = 'sample'
@@ -208,14 +207,13 @@ if __name__ == "__main__":
                     f_pareto = gp.f[rank==1.0]
                     if nf == 2:
                         plt.figure('2D Objective-space '+func_name+' with '+str(gp.ns-gp.n_add)+'-samples')
-                        plt.plot(gp.f[:-gp.n_add,0], gp.f[:-gp.n_add,1], '.', c='black', label='sample points')
-                        plt.plot(gp.f[-gp.n_add:,0], gp.f[-gp.n_add:,1], '.', c='magenta', label='additional sample points')
+                        plt.scatter(gp.f[:,0], gp.f[:,1], marker='o', c='black', s=10, label='sample points')
+                        plt.scatter(gp.f_opt[:,0], gp.f_opt[:,1], marker='o', c='grey', s=10, label='estimated PF')
                         plt.plot(gp.utopia[0], gp.utopia[1], '+', c='black', label='utopia point')
                         plt.plot(gp.nadir[0], gp.nadir[1], '+', c='black', label='nadir point')
-                        plt.plot(gp.refpoint[:,0], gp.refpoint[:,1], '.', c='blue',marker='+', label='reference PBI points')
-                        plt.scatter(gp.f_candidate[:,0],gp.f_candidate[:,1],c=gp.fitness_org,cmap='jet',marker='*', label='candidate points')
-                        plt.scatter(f_add_est[:,0],f_add_est[:,1], facecolors='none', edgecolors='black', marker='o', label='selected candidate points')
-                        plt.scatter(gp.f_ref[:,0],gp.f_ref[:,1],c='grey',s=1,marker='*', label='estimated PF')
+                        plt.scatter(gp.f_candidate[:,0], gp.f_candidate[:,1], c=gp.fitness_org, cmap='jet', marker='o', s=40, label='candidate points')
+                        plt.scatter(f_add_est[:,0],f_add_est[:,1], facecolors='none', edgecolors='magenta', marker='o', s=60, linewidth=2, label='selected candidate points')
+                        plt.scatter(gp.f[-gp.n_add:,0], gp.f[-gp.n_add:,1], facecolors='magenta', marker='x', s=30, linewidth=1.5, label='additional sample points')
                         plt.legend()
                         plt.show(block=False)
                         title = current_dir + '/2D_Objective_space_'+func_name+' with '+str(gp.ns-gp.n_add)+'-samples_in_'+str(itrial)+'-th_trial.png'
@@ -232,14 +230,16 @@ if __name__ == "__main__":
                         plt.savefig(title)
                         plt.close()
                         
-                    elif nf > 2:
+                    elif nf == 3:
                         fig = plt.figure('3D Objective-space '+func_name+' with '+str(gp.ns-gp.n_add)+'-samples')
                         ax = Axes3D(fig)
-                        ax.scatter3D(gp.f[-gp.n_add:,0],gp.f[-gp.n_add:,1],gp.f[-gp.n_add:,-1],c='red',marker='^', label='additional sample points')
-                        ax.scatter3D(f_pareto[:,0],f_pareto[:,1],f_pareto[:,-1],c='blue',marker='+', label='NDSs among sample points')
-                        ax.scatter3D(gp.f_candidate[:,0],gp.f_candidate[:,1],gp.f_candidate[:,-1],c=gp.fitness_org,cmap='jet',marker='*', label='candidate points')
-                        ax.scatter3D(f_add_est[:,0],f_add_est[:,1],f_add_est[:,-1], c='black', label='selected candidate points')
-                        ax.scatter3D(gp.f_ref[:,0],gp.f_ref[:,1],gp.f_ref[:,-1],c='grey',s=1,marker='*', label='estimated PF')
+                        #    ax.scatter3D(gp.f[rank>1,0], gp.f[rank>1,1], gp.f[rank>1,2], marker='o', c='black', s=10, label='sample points')
+                        #    ax.scatter3D(gp.f_opt[:,0], gp.f_opt[:,1], gp.f_opt[:,2], marker='o', c='grey', s=10, alpha=0.5, label='estimated PF')
+                        ax.scatter3D(gp.f[rank==1,0], gp.f[rank==1,1], gp.f[rank==1,2], marker='o', c='blue', s=20, label='NDSs among sample points')
+                        ax.scatter3D(gp.f_candidate[:,0], gp.f_candidate[:,1], gp.f_candidate[:,2], c=gp.fitness_org, cmap='jet', marker='*', s=40, label='candidate points')
+                        ax.scatter3D(f_add_est[:,0], f_add_est[:,1], f_add_est[:,-1], marker='o', c='none', edgecolor='magenta', s=60, linewidth=2, label='selected candidate points')
+                        ax.scatter3D(gp.f[-gp.n_add:,0],gp.f[-gp.n_add:,1],gp.f[-gp.n_add:,-1], marker='o', c='none', edgecolor='black', s=60, linewidth=2, label='additional sample points')
+                        ax.view_init(elev=30, azim=45)
                         plt.legend()
                         title = current_dir + '/3D_Objective_space_'+func_name+' with '+str(gp.ns-gp.n_add)+'-samples_in_'+str(itrial)+'-th_trial.png'
                         plt.savefig(title)
@@ -252,6 +252,7 @@ if __name__ == "__main__":
                         else:
                             ax2.scatter3D(igd_ref[:,0],igd_ref[:,1],igd_ref[:,-1],c='green',s=1)
                         ax2.scatter3D(f_pareto[:,0],f_pareto[:,1],f_pareto[:,-1],c='blue',s=20,marker='o')
+                        ax2.view_init(elev=30, azim=45)
                         title = current_dir + '/Optimal_solutions_'+func_name+' with '+str(gp.ns)+'-samples_in_'+str(itrial)+'-th_trial.png'
                         plt.savefig(title)
                         plt.close()

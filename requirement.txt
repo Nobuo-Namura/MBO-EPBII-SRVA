@@ -1,0 +1,9 @@
+numpy
+pandas
+scipy
+matplotlib
+scikit-learn
+deap
+pyDOE
+pygmo
+optproblems

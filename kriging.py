@@ -858,9 +858,9 @@ if __name__ == "__main__":
             for i in range(len(X[:,0])):
                 for j in range(len(X[0,:])):
                     F[i,j], S[i,j] = gp.kriging_estimation(np.array([X[i,j],Y[i,j]]))
-            plt.figure('Kriging_objective'+str(k+1))
+            plt.figure('objective function '+str(k+1))
             plt.plot(gp.x[:,0],gp.x[:,1],'o',c='black')
-            plt.pcolor(X,Y,F,cmap='jet')
+            plt.pcolor(X,Y,F,cmap='jet',shading="auto")
             plt.colorbar()
             plt.contour(X,Y,F,40,colors='black',linestyles='solid')
             plt.show()
@@ -878,7 +878,7 @@ if __name__ == "__main__":
                 fs[j,1] = func(x_valid[j,:])
         delt = fs[:,0]-fs[:,1]
         R2[i] = 1-(np.dot(delt,delt)/float(n_valid))/np.var(fs[:,1])
-        plt.figure('objective'+str(i+1))
+        plt.figure('cross validation for objective function '+str(i+1))
         plt.plot(fs[:,1], fs[:,0], '.')
     print(R2)
 
