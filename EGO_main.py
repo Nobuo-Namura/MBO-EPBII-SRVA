@@ -63,11 +63,11 @@ if __name__ == "__main__":
     nhin = 0                                 # If VER2021=False, division number for the inner layer of the two-layered simplex latice-design (>=0)
     #NSGA3 if OPTIMIZER=NSGA3:
     n_randvec_nsga3 = 0                      # Number of random reference vector (>=0)
-    nh_nsga3 = division.loc[nf, 'nh_ga']     # Division number for the outer layer of the two-layered simplex latice-design (>=0)
-    nhin_nsga3 = division.loc[nf, 'nhin_ga'] # Division number for the inner layer of the two-layered simplex latice-design (>=0)
+    nh_nsga3 = division.loc[nf, 'nh_ea']     # Division number for the outer layer of the two-layered simplex latice-design (>=0)
+    nhin_nsga3 = division.loc[nf, 'nhin_ea'] # Division number for the inner layer of the two-layered simplex latice-design (>=0)
     ngen_nsga3 = 200                         # Number of generation in NSGA3
     #NSGA2 if OPTIMIZER=NSGA2:
-    npop_nsga2 = division.loc[nf, 'n_ga']    # Number of population in NSGA2
+    npop_nsga2 = division.loc[nf, 'n_ea']    # Number of population in NSGA2
     ngen_nsga2 = 200                         # Number of generation in NSGA2
     #initial sample
     GENE = True                              # True=Generate initial sample with LHS, False=Read files
